@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025个税计算器 - 快速查询</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .quick-select {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .quick-btn {
+            padding: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f5f5f5;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .quick-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .result-label {
+            color: #666;
+        }
+        
+        .result-value {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .result-value.tax {
+            color: #e74c3c;
+        }
+        
+        .result-value.income {
+            color: #27ae60;
+            font-size: 20px;
+        }
+        
+        .tips {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff3cd;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .tips h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .tips ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .tips li {
+            margin-bottom: 8px;
+            color: #856404;
+        }
+        
+        .tips li:before {
+            content: "✓ ";
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        .donate {
+            margin-top: 40px;
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .donate h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .donate p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .donate-img {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+            border-radius: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 个税计算器</h1>
+        <p class="subtitle">2025年最新版 - 快速精准计算</p>
+        
+        <div class="input-group">
+            <label>月薪（税前工资）</label>
+            <input type="number" id="salary" placeholder="请输入您的税前月薪">
+            <div class="quick-select">
+                <button class="quick-btn" onclick="setSalary(5000)">5千</button>
+                <button class="quick-btn" onclick="setSalary(8000)">8千</button>
+                <button class="quick-btn" onclick="setSalary(10000)">1万</button>
+                <button class="quick-btn" onclick="setSalary(15000)">1.5万</button>
+                <button class="quick-btn" onclick="setSalary(20000)">2万</button>
+                <button class="quick-btn" onclick="setSalary(30000)">3万</button>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label>五险一金（个人缴纳部分）</label>
+            <input type="number" id="insurance" placeholder="没有请填0" value="0">
+        </div>
+        
+        <div class="input-group">
+            <label>专项附加扣除</label>
+            <select id="deduction">
+                <option value="0">无专项扣除</option>
+                <option value="1000">子女教育（1000元/月）</option>
+                <option value="1500">住房租金（1500元/月）</option>
+                <option value="1000">住房贷款（1000元/月）</option>
+                <option value="2000">赡养老人（2000元/月）</option>
+                <option value="3000">多项扣除（3000元/月）</option>
+            </select>
+        </div>
+        
+        <button class="calculate-btn" onclick="calculate()">立即计算</button>
+        
+        <div class="result" id="result">
+            <h3 style="margin-bottom: 20px; color: #333;">📊 计算结果</h3>
+            <div class="result-item">
+                <span class="result-label">税前月薪</span>
+                <span class="result-value" id="showSalary">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">应纳税所得额</span>
+                <span class="result-value" id="taxableIncome">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">适用税率</span>
+                <span class="result-value" id="taxRate">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">应缴个税</span>
+                <span class="result-value tax" id="tax">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">税后收入</span>
+                <span class="result-value income" id="afterTax">-</span>
+            </div>
+        </div>
+        
+        <div class="tips">
+            <h3>💡 省税小技巧</h3>
+            <ul>
+                <li>申报专项附加扣除，每年可省上千元</li>
+                <li>年终奖可选择单独计税或合并计税</li>
+                <li>公积金缴纳比例高可以降低应税收入</li>
+                <li>记得申报大病医疗、继续教育等扣除</li>
+            </ul>
+        </div>
+        
+        <div class="donate">
+            <h3>☕ 觉得有用？请作者喝杯咖啡</h3>
+            <p>
+                这个工具完全免费使用<br>
+                如果帮到您，可以打赏支持<br>
+                您的鼓励是我持续更新的动力
+            </p>
+            <div class="donate-img">
+                [请将此处替换为您的收款码]
+            </div>
+            <p style="font-size: 14px; color: #999;">
+                金额随意，1元起步<br>
+                已有1827位朋友打赏支持 ❤️
+            </p>
+        </div>
+        
+        <p class="footer">
+            仅供参考，实际以税务部门为准<br>
+            © 2025 个税计算器
+        </p>
+    </div>
+    
+    <script>
+        function setSalary(amount) {
+            document.getElementById('salary').value = amount;
+        }
+        
+        function calculate() {
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+            const deduction = parseFloat(document.getElementById('deduction').value) || 0;
+            
+            if (salary <= 0) {
+                alert('请输入正确的工资金额');
+                return;
+            }
+            
+            // 计算应纳税所得额
+            const threshold = 5000; // 起征点
+            const taxableIncome = Math.max(0, salary - insurance - deduction - threshold);
+            
+            // 计算税额
+            let tax = 0;
+            let rate = '0%';
+            
+            if (taxableIncome <= 0) {
+                tax = 0;
+                rate = '0%';
+            } else if (taxableIncome <= 3000) {
+                tax = taxableIncome * 0.03;
+                rate = '3%';
+            } else if (taxableIncome <= 12000) {
+                tax = taxableIncome * 0.1 - 210;
+                rate = '10%';
+            } else if (taxableIncome <= 25000) {
+                tax = taxableIncome * 0.2 - 1410;
+                rate = '20%';
+            } else if (taxableIncome <= 35000) {
+                tax = taxableIncome * 0.25 - 2660;
+                rate = '25%';
+            } else if (taxableIncome <= 55000) {
+                tax = taxableIncome * 0.3 - 4410;
+                rate = '30%';
+            } else if (taxableIncome <= 80000) {
+                tax = taxableIncome * 0.35 - 7160;
+                rate = '35%';
+            } else {
+                tax = taxableIncome * 0.45 - 15160;
+                rate = '45%';
+            }
+            
+            // 显示结果
+            document.getElementById('showSalary').textContent = `¥${salary.toFixed(2)}`;
+            document.getElementById('taxableIncome').textContent = `¥${taxableIncome.toFixed(2)}`;
+            document.getElementById('taxRate').textContent = rate;
+            document.getElementById('tax').textContent = `¥${tax.toFixed(2)}`;
+            document.getElementById('afterTax').textContent = `¥${(salary - insurance - tax).toFixed(2)}`;
+            
+            // 显示结果区域
+            document.getElementById('result').classList.add('show');
+            
+            // 滚动到结果
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 回车键计算
+        document.getElementById('salary').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculate();
+            }
+        });
+    </script>
+</body>
+</html>
